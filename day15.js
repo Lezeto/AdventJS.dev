@@ -1,20 +1,48 @@
-let lista=[{ name: 'Charlie', city: 'New York', age: 20 },
-    { name: 'Alice', city: 'London', age: 15 },
-    { name: 'Bob', city: 'Paris', age: 39 },
-    { name: 'Nicolas', city: 'Santiago', age: 30},
-    { name: 'Sandra', city: 'Santiago', age: 60},
-    { name: 'Harvey', city: 'New York', age: 34}];
-let lista2=[...lista];
+function drawTable(data, sortBy) {
+  if (data.length === 0) return '';
 
-function sorting(data, sortBy){
-    let data2=[...data];
-    data2.sort((a,b)=>{ 
-        if(typeof(data[0][sortBy])==="string"){        
-            return a[sortBy].localeCompare(b[sortBy])}
-        if(typeof(data[0][sortBy])==="number"){
-            return a[sortBy]- b[sortBy]}
-    })
-    console.log(data2);
+  const columns = Object.keys(data[0]);
+
+  const sortedData = [...data].sort((a, b) => {
+    if (typeof a[sortBy] === 'number') {
+      return a[sortBy] - b[sortBy];
+    }
+    return String(a[sortBy]).localeCompare(String(b[sortBy]));
+  });
+
+  const widths = columns.map(col =>
+    Math.max(
+      col.length,
+      ...sortedData.map(row => String(row[col]).length)
+    ) + 2
+  );
+
+  const separator = '+' + widths.map(w => '-'.repeat(w + 1)).join('+') + '+';
+
+  const header =
+    '| ' +
+    widths
+      .map((w, i) =>
+        String.fromCharCode(65 + i).padEnd(w, ' ')
+      )
+      .join('| ') +
+    '|';
+
+  const rows = sortedData.map(row =>
+    '| ' +
+    columns
+      .map((col, i) =>
+        String(row[col]).padEnd(widths[i], ' ')
+      )
+      .join('| ') +
+    '|'
+  );
+
+  return [
+    separator,
+    header,
+    separator,
+    ...rows,
+    separator
+  ].join('\n');
 }
-
-sorting(lista, "age");
